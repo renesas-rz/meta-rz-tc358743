@@ -2,7 +2,7 @@
 HDMI to MIPI-CSI Capture Device using the Geekworm C790 ( TI TC358743 Chip )
 ### Supported Devices
 - RZ/V2N EVK ( AISDK 6.0 )
-- RZ/V2N **TDB**
+- RZ/V2H **TDB**
 
 ### Requirments
 - Geekworm C790 ( TI TC358743 Chip )
