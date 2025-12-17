@@ -1,0 +1,80 @@
+From dd2b694ab6a453919fd66d3b08c5769f2c95b856 Mon Sep 17 00:00:00 2001
+From: zkmike <zkmike@gmail.com>
+Date: Tue, 16 Dec 2025 16:37:29 -0800
+Subject: [PATCH 1/4] Add tc358743 driver
+
+---
+ drivers/media/i2c/tc358743.c | 25 ++++++++++++++++++++++++-
+ 1 file changed, 24 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/media/i2c/tc358743.c b/drivers/media/i2c/tc358743.c
+index 68628ccecd16..1af871e89390 100644
+--- a/drivers/media/i2c/tc358743.c
++++ b/drivers/media/i2c/tc358743.c
+@@ -81,6 +81,7 @@ struct tc358743_state {
+ 	struct v4l2_ctrl *detect_tx_5v_ctrl;
+ 	struct v4l2_ctrl *audio_sampling_rate_ctrl;
+ 	struct v4l2_ctrl *audio_present_ctrl;
++	struct v4l2_ctrl *pixel_rate_ctrl;
+ 
+ 	struct delayed_work delayed_work_enable_hotplug;
+ 
+@@ -1521,6 +1522,19 @@ static int tc358743_g_input_status(struct v4l2_subdev *sd, u32 *status)
+ 	return 0;
+ }
+ 
++/* Helper function to update pixel rate when timings change */
++static void tc358743_update_pixel_rate(struct v4l2_subdev *sd)
++{
++    struct tc358743_state *state = to_state(sd);
++
++    if (state->pixel_rate_ctrl && state->timings.bt.pixelclock) {
++        u64 pixel_rate = state->timings.bt.pixelclock;
++        v4l2_ctrl_s_ctrl_int64(state->pixel_rate_ctrl, pixel_rate);
++        v4l2_dbg(1, debug, sd, "%s: pixel rate updated to %llu\n",
++             __func__, pixel_rate);
++    }
++}
++
+ static int tc358743_s_dv_timings(struct v4l2_subdev *sd,
+ 				 struct v4l2_dv_timings *timings)
+ {
+@@ -1546,6 +1560,8 @@ static int tc358743_s_dv_timings(struct v4l2_subdev *sd,
+ 
+ 	state->timings = *timings;
+ 
++	tc358743_update_pixel_rate(sd);
++
+ 	enable_stream(sd, false);
+ 	tc358743_set_pll(sd);
+ 	tc358743_set_csi(sd);
+@@ -1592,6 +1608,8 @@ static int tc358743_query_dv_timings(struct v4l2_subdev *sd,
+ 		return -ERANGE;
+ 	}
+ 
++	tc358743_update_pixel_rate(sd);
++
+ 	return 0;
+ }
+ 
+@@ -2062,11 +2080,16 @@ static int tc358743_probe(struct i2c_client *client)
+ 	}
+ 
+ 	/* control handlers */
+-	v4l2_ctrl_handler_init(&state->hdl, 3);
++	v4l2_ctrl_handler_init(&state->hdl, 4);
+ 
+ 	state->detect_tx_5v_ctrl = v4l2_ctrl_new_std(&state->hdl, NULL,
+ 			V4L2_CID_DV_RX_POWER_PRESENT, 0, 1, 0, 0);
+ 
++	state->pixel_rate_ctrl = v4l2_ctrl_new_std(&state->hdl, NULL,
++        V4L2_CID_PIXEL_RATE, 0, INT_MAX, 1, 148500000);
++	if (state->pixel_rate_ctrl)
++	    state->pixel_rate_ctrl->flags |= V4L2_CTRL_FLAG_READ_ONLY;
++		
+ 	/* custom controls */
+ 	state->audio_sampling_rate_ctrl = v4l2_ctrl_new_custom(&state->hdl,
+ 			&tc358743_ctrl_audio_sampling_rate, NULL);
+-- 
+2.25.1
+

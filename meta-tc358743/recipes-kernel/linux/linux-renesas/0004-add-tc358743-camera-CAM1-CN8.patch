@@ -1,0 +1,71 @@
+From c5d1f427491ab0a8c22f729125ff9c28e5f2c120 Mon Sep 17 00:00:00 2001
+From: zkmike <zkmike@gmail.com>
+Date: Tue, 16 Dec 2025 17:17:39 -0800
+Subject: [PATCH 4/4] add tc358743 camera CAM1 CN8
+
+---
+ .../boot/dts/renesas/r9a09g056n44-evk.dts     | 41 ++++++++++++++++++-
+ 1 file changed, 40 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/renesas/r9a09g056n44-evk.dts b/arch/arm64/boot/dts/renesas/r9a09g056n44-evk.dts
+index 02e9bf9c240b..ac276691fca9 100644
+--- a/arch/arm64/boot/dts/renesas/r9a09g056n44-evk.dts
++++ b/arch/arm64/boot/dts/renesas/r9a09g056n44-evk.dts
+@@ -885,6 +885,37 @@ &i2c1 {
+ 
+ 	status = "okay";
+ 
++	tc358743_csi21: tc358743_csi21@f {
++
++	    /* TC358743 SPECIFIC - must match driver exactly */
++	    compatible = "toshiba,tc358743";
++		reg = <0x0f>;
++
++	    clock-names = "refclk";					// TC358743 Specific name
++	    dovdd-supply = <&tc358743_dovdd_1v8>;		// TC358743 Specific supply names
++	    avdd-supply = <&tc358743_avdd_3v3>;	// TC358743 Specific supply names  
++	    dvdd-supply = <&tc358743_dvdd_1v2>;		// TC358743 Specific supply names
++	    
++	    /* STANDARD properties (but TC358743-specific values) */
++	    clocks = <&tc358743_clk>;
++	    clock-frequency = <27000000>;  // HDMI typical frequency
++		
++		enable-gpios = <&pinctrl RZG2L_GPIO(6, 5) GPIO_ACTIVE_HIGH>;
++	    /*Enable the MIPI reset pin */
++		reset-gpios = <&pinctrl RZG2L_GPIO(10, 6) GPIO_ACTIVE_LOW>;
++	    
++	    port {
++	        tc358743_to_csi21: endpoint {
++	            /* STANDARD CSI-2 properties */
++	            clock-lanes = <0>;
++	            data-lanes = <1 2 3 4>;
++	            remote-endpoint = <&csi21_in>;
++	            
++	            /* TC358743 commonly uses this */
++	            link-frequencies = /bits/ 64 <297000000>;
++	        };
++	    };
++	};
+ };
+ 
+ &cru1 {
+@@ -894,7 +925,15 @@ &cru1 {
+ &csi21 {
+ 	status = "okay";
+ 
+-
++	ports {
++		port {
++			csi21_in: endpoint {
++				clock-lanes = <0>;
++				data-lanes = <1 2 3 4>;
++				remote-endpoint = <&tc358743_to_csi21>;
++			};
++		};
++	};
+ };
+ #else
+ &spi2 {
+-- 
+2.25.1
+

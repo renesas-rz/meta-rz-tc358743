@@ -1,0 +1,67 @@
+From 9af40426c59091a55044313f271aa52fa6bf2a9b Mon Sep 17 00:00:00 2001
+From: zkmike <zkmike@gmail.com>
+Date: Tue, 16 Dec 2025 17:16:38 -0800
+Subject: [PATCH 3/4] add tc358743 camera CAM0 CN7
+
+---
+ .../boot/dts/renesas/r9a09g056n44-evk.dts     | 37 +++++++++++++++++++
+ 1 file changed, 37 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/renesas/r9a09g056n44-evk.dts b/arch/arm64/boot/dts/renesas/r9a09g056n44-evk.dts
+index 3c0937464b05..02e9bf9c240b 100644
+--- a/arch/arm64/boot/dts/renesas/r9a09g056n44-evk.dts
++++ b/arch/arm64/boot/dts/renesas/r9a09g056n44-evk.dts
+@@ -831,6 +831,34 @@ &i2c0 {
+ 
+ 	status = "okay";
+ 
++	tc358743_csi20: tc358743_csi20@f {
++
++	    /* TC358743 SPECIFIC - must match driver exactly */
++	    compatible = "toshiba,tc358743";
++		reg = <0x0f>;
++
++	    clock-names = "refclk";					// TC358743 Specific name
++	    dovdd-supply = <&tc358743_dovdd_1v8>;		// TC358743 Specific supply names
++	    avdd-supply = <&tc358743_avdd_3v3>;	// TC358743 Specific supply names  
++	    dvdd-supply = <&tc358743_dvdd_1v2>;		// TC358743 Specific supply names
++	    
++	    /* STANDARD properties (but TC358743-specific values) */
++	    clocks = <&tc358743_clk>;
++	    clock-frequency = <27000000>;  // HDMI typical frequency
++	    reset-gpios = <&pinctrl RZG2L_GPIO(6, 4) GPIO_ACTIVE_LOW>;
++
++	    port {
++	        tc358743_to_csi20: endpoint {
++	            /* STANDARD CSI-2 properties */
++	            clock-lanes = <0>;
++	            data-lanes = <1 2 3 4>;
++	            remote-endpoint = <&csi20_in>;
++	            
++	            /* TC358743 commonly uses this */
++	            link-frequencies = /bits/ 64 <297000000>;
++	        };
++	    };
++	};
+ };
+ 
+ &cru0 {
+@@ -840,6 +868,15 @@ &cru0 {
+ &csi20 {
+ 	status = "okay";
+ 
++	ports {
++		port {
++			csi20_in: endpoint {
++				clock-lanes = <0>;
++				data-lanes = <1 2 3 4>;
++				remote-endpoint = <&tc358743_to_csi20>;
++			};
++		};
++	};
+ };
+ 
+ &i2c1 {
+-- 
+2.25.1
+
