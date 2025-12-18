@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export MEDIA_DEV="/dev/media1"
-export TC358743_SUBDEV="/dev/v4l-subdev1"
+export TC358743_SUBDEV="/dev/v4l-subdev4"
 export VIDEO_DEV="/dev/video1"
 
 echo "=== TC358743 V4L2 Event Trigger ==="
@@ -13,13 +13,13 @@ sleep 3
 
 # 2. Setup pipeline with ALL formats specified
 echo "2. Setting up complete pipeline..."
-media-ctl -d $MEDIA_DEV -l '"tc358743 0-000f":0 -> "csi-16000400.csi20":0 [1]'
-media-ctl -d $MEDIA_DEV -l '"cru-ip-16000000.cru0":1 -> "CRU output":0 [1]'
+media-ctl -d $MEDIA_DEV -l '"tc358743 1-000f":0 -> "csi-16010400.csi21":0 [1]'
+media-ctl -d $MEDIA_DEV -l '"cru-ip-16010000.cru1":1 -> "CRU output":0 [1]'
 
 # Set formats on ALL entities
-media-ctl -d $MEDIA_DEV -V '"tc358743 0-000f":0 [fmt:UYVY8_1X16/1920x1080 field:none colorspace:rec709]'
-media-ctl -d $MEDIA_DEV -V '"csi-16000400.csi20":0 [fmt:UYVY8_1X16/1920x1080 field:none]'
-media-ctl -d $MEDIA_DEV -V '"csi-16000400.csi20":1 [fmt:UYVY8_1X16/1920x1080 field:none]'
+media-ctl -d $MEDIA_DEV -V '"tc358743 1-000f":0 [fmt:UYVY8_1X16/1920x1080 field:none colorspace:rec709]'
+media-ctl -d $MEDIA_DEV -V '"csi-16010400.csi21":0 [fmt:UYVY8_1X16/1920x1080 field:none]'
+media-ctl -d $MEDIA_DEV -V '"csi-16010400.csi21":1 [fmt:UYVY8_1X16/1920x1080 field:none]'
 
 sleep 2
 
@@ -38,7 +38,7 @@ sleep 1
 echo "5. Start Capture to File with V4L2 ..."
 # This might trigger the TC358743 to start transmitting
 # This will capture 5 frames to raw file
-v4l2-ctl -d /dev/video0 --set-fmt-video=width=1920,height=1080,pixelformat='UYVY'
+v4l2-ctl -d $VIDEO_DEV --set-fmt-video=width=1920,height=1080,pixelformat='UYVY'
 v4l2-ctl -d $VIDEO_DEV --stream-mmap --stream-count=5 --stream-to=/tmp/test_event.raw &
 sleep 5
 
@@ -70,7 +70,7 @@ else
 	exit 0
 fi
 
-gst-launch-1.0 v4l2src device=/dev/video1 io-mode=dmabuf ! \
+gst-launch-1.0 v4l2src device=$VIDEO_DEV io-mode=dmabuf ! \
 "video/x-raw,format=UYVY,width=1920,height=1080,framerate=60/1" \
 ! videoconvert ! waylandsink sync=false
 
