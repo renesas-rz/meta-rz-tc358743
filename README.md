@@ -10,7 +10,7 @@ HDMI to MIPI-CSI Capture Device using the Geekworm C790 ( TC358743 Chip )
 - Linux Kernel v6.1 (Renesas AISDK 6.1 )
 - Yocto Scarthgap ( Renesas AISDK 6.1 )
 - Geekworm C790 ( TI TC358743 Chip )
-- FCC Cable 22 pin 0.5 pitch A Type (copper same on both sides)
+- FCC Cable 22 pin 0.5 pitch A Type (copper same sides)
 	- **WARNING: Do not use cables that come with C790**
 
  <img src="images/FlexibleFlatCable.jpg" width="100" height="auto" alt="Recommeded FCC Cable">
