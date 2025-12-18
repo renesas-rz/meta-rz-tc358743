@@ -7,3 +7,8 @@ SRC_URI += " \
     file://0004-add-tc358743-camera-CAM1-CN8.patch \
     file://tc358743.cfg \
 "
+
+# Force the fragment to be merged if the standard flow fails
+do_configure:append() {
+    cat ${WORKDIR}/tc358743.cfg >> ${B}/.config
+}
