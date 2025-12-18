@@ -50,7 +50,11 @@ bitbake-layers add-layer ../meta-tc458743
 ## Running Demo
 
 This meta layer includes scripts that setup the tc358743 for 1080p60 capture. The scripts also include gstreamer commands to stream the captured video to a connected LCD.
+
  <img src="images/demo_app_example_v2n.png">
+
+<br/>
+ <img src="images/c790_module_demo.png">
 
 1) Connect the Hardware as shown in the image above.
 	- Connect the AC Adapter ( 100W required )
