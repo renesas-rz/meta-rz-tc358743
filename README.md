@@ -32,19 +32,19 @@ This build process follows the standard Renesas AISDK Yocto Build process and it
 2) Build the RZ/V AISDK ( Steps 3.1 to 3.10 )
 	- [How to Build AISDK RZV2N ](https://renesas-rz.github.io/rzv_ai_sdk/latest/howto_build_aisdk_v2n.html)
 	- ***Skip Step 3.5 Adding e-CAM22_CURZH patch***
-5) Copy the meta-tc358743 folder to the AISDK YOCTO_WORK directory. The work folder should look like this
+5) Download this repository meta-rz-tc358743 to the AISDK YOCTO_WORK directory. The work folder should look like this
 ```
 ├── meta-arm
 ├── meta-openembedded
 ├── meta-renesas
 ├── meta-rz-features
-├── meta-tc358743 <- added tc358743
+├── meta-rz-tc358743 <- added tc358743
 ├── poky
 └── src_setup
 ```
-4) Add meta layer "meta-tc358743" to the AISDK Yocto Build
+4) Add meta layer "meta-rz-tc358743" to the AISDK Yocto Build
 ```
-bitbake-layers add-layer ../meta-tc458743
+bitbake-layers add-layer ../meta-rz-tc458743
 ```
 5) Continue the Build process ( Step 3.11) in the How to Build AISDK RZV2N
 ## Running Demo
