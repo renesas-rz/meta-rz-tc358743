@@ -4,11 +4,12 @@ HDMI to MIPI-CSI Capture Device using the Geekworm C790 ( TC358743 Chip )
 
 ### Supported Devices
 - RZ/V2N EVK ( minimium AISDK 6.1 )
-- RZ/V2H **TDB**
+- RZ/V2H EVK ( minimium AISDK 7.0 )
 
 ### Requirments
-- Linux Kernel v6.1 (Renesas AISDK 6.1 )
-- Yocto Scarthgap ( Renesas AISDK 6.1 )
+- [ Renesas AI SDK ](https://renesas-rz.github.io/rzv_ai_sdk/latest)
+	- Linux Kernel v6.1
+	- Yocto Scarthgap
 - Geekworm C790 ( TI TC358743 Chip )
 - FCC Cable 22 pin 0.5 pitch A Type (copper same sides)
 	- **WARNING: Do not use cables that come with C790**
