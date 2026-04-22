@@ -1,0 +1,262 @@
+From ebaf976d376b8f2d139aeebd3c73822d2f22daeb Mon Sep 17 00:00:00 2001
+From: zkmike <zkmike@gmail.com>
+Date: Wed, 22 Apr 2026 11:45:42 -0700
+Subject: [PATCH 2/6] Remove OV5645
+
+---
+ .../boot/dts/renesas/rzv2h-evk-common.dtsi    | 176 ++++--------------
+ 1 file changed, 33 insertions(+), 143 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/renesas/rzv2h-evk-common.dtsi b/arch/arm64/boot/dts/renesas/rzv2h-evk-common.dtsi
+index 89bfc7eec..8597446ee 100644
+--- a/arch/arm64/boot/dts/renesas/rzv2h-evk-common.dtsi
++++ b/arch/arm64/boot/dts/renesas/rzv2h-evk-common.dtsi
+@@ -222,6 +222,39 @@ reg_3p3v: regulator-3p3v {
+ 		regulator-always-on;
+ 	};
+ 
++	tc358743_dovdd_1v8: regulator-1v8 {
++	    compatible = "regulator-fixed";
++	    regulator-name = "tc358743_dovdd";
++	    regulator-min-microvolt = <1800000>;
++	    regulator-max-microvolt = <1800000>;
++	    regulator-always-on;
++ 	};
++
++	/* Add 3.3V regulator for analog (if not already available) */
++	tc358743_avdd_3v3: regulator-3v3 {
++	    compatible = "regulator-fixed";
++	    regulator-name = "tc358743_avdd";
++	    regulator-min-microvolt = <3300000>;
++	    regulator-max-microvolt = <3300000>;
++	    regulator-always-on;
++	};
++
++	/* Add a 1.2V regulator for TC358743 digital core */
++	tc358743_dvdd_1v2: regulator-1v2 {
++	    compatible = "regulator-fixed";
++	    regulator-name = "tc358743_dvdd";
++	    regulator-min-microvolt = <1200000>;
++	    regulator-max-microvolt = <1200000>;
++	    regulator-always-on;
++ 	};
++
++	/* Add 27MHz clock */
++	tc358743_clk: tc358743-clock {
++	    compatible = "fixed-clock";
++	    #clock-cells = <0>;
++	    clock-frequency = <27000000>;
++ 	};
++
+ 	vqmmc_sdhi1: regulator-vccq-sdhi1 {
+ 		compatible = "regulator-gpio";
+ 		regulator-name = "SDHI1 VccQ";
+@@ -249,35 +282,6 @@ osc1: cec-clock {
+ 		clock-frequency = <12000000>;
+ 	};
+ 
+-	ov5645_fixed_clk: osc25250-clk {
+-		compatible = "fixed-clock";
+-		#clock-cells = <0>;
+-		clock-frequency = <24000000>;
+-	};
+-
+-	ov5645_vdddo_1v8: 1p8v {
+-		compatible = "regulator-fixed";
+-		regulator-name = "camera_vdddo";
+-		regulator-min-microvolt = <1800000>;
+-		regulator-max-microvolt = <1800000>;
+-		regulator-always-on;
+-	};
+-
+-	ov5645_vdda_2v8: 2p8v {
+-		compatible = "regulator-fixed";
+-		regulator-name = "camera_vdda";
+-		regulator-min-microvolt = <2800000>;
+-		regulator-max-microvolt = <2800000>;
+-		regulator-always-on;
+-	};
+-
+-	ov5645_vddd_1v5: 1p5v {
+-		compatible = "regulator-fixed";
+-		regulator-name = "camera_vddd";
+-		regulator-min-microvolt = <1500000>;
+-		regulator-max-microvolt = <1500000>;
+-		regulator-always-on;
+-	};
+ 
+ #if (!SEL_CAN01_HEADER)
+ 	codec_test0: codec_test0 {
+@@ -385,26 +389,6 @@ &i2c0 {
+ 
+ 	status = "okay";
+ 
+-	ov5645_csi20: ov5645_csi20@3c {
+-		compatible = "ovti,ov5645";
+-		reg = <0x3c>;
+-		clocks = <&ov5645_fixed_clk>;
+-		clock-frequency = <24000000>;
+-		vdddo-supply = <&ov5645_vdddo_1v8>;
+-		vdda-supply = <&ov5645_vdda_2v8>;
+-		vddd-supply = <&ov5645_vddd_1v5>;
+-		/* Set dummy enable gpio */
+-		enable-gpios = <&gpio_dummy 0 GPIO_ACTIVE_HIGH>;
+-		reset-gpios = <&pinctrl RZV2H_GPIO(6, 4) GPIO_ACTIVE_LOW>;
+-
+-		port {
+-			ov5645_to_csi20: endpoint {
+-				clock-lanes = <0>;
+-				data-lanes = <1 2>;
+-				remote-endpoint = <&csi20_in>;
+-			};
+-		};
+-	};
+ };
+ 
+ &i2c1 {
+@@ -414,26 +398,6 @@ &i2c1 {
+ 
+ 	status = "okay";
+ 
+-	ov5645_csi21: ov5645_csi21@3c {
+-		compatible = "ovti,ov5645";
+-		reg = <0x3c>;
+-		clocks = <&ov5645_fixed_clk>;
+-		clock-frequency = <24000000>;
+-		vdddo-supply = <&ov5645_vdddo_1v8>;
+-		vdda-supply = <&ov5645_vdda_2v8>;
+-		vddd-supply = <&ov5645_vddd_1v5>;
+-		/* Set dummy enable gpio */
+-		enable-gpios = <&gpio_dummy 1 GPIO_ACTIVE_HIGH>;
+-		reset-gpios = <&pinctrl RZV2H_GPIO(6, 5) GPIO_ACTIVE_LOW>;
+-
+-		port {
+-			ov5645_to_csi21: endpoint {
+-				clock-lanes = <0>;
+-				data-lanes = <1 2>;
+-				remote-endpoint = <&csi21_in>;
+-			};
+-		};
+-	};
+ };
+ 
+ &cru0 {
+@@ -443,15 +407,6 @@ &cru0 {
+ &csi20 {
+ 	status = "okay";
+ 
+-	ports {
+-		port {
+-			csi20_in: endpoint {
+-				clock-lanes = <0>;
+-				data-lanes = <1 2>;
+-				remote-endpoint = <&ov5645_to_csi20>;
+-			};
+-		};
+-	};
+ };
+ 
+ &cru1 {
+@@ -461,15 +416,6 @@ &cru1 {
+ &csi21 {
+ 	status = "okay";
+ 
+-	ports {
+-		port {
+-			csi21_in: endpoint {
+-				clock-lanes = <0>;
+-				data-lanes = <1 2>;
+-				remote-endpoint = <&ov5645_to_csi21>;
+-			};
+-		};
+-	};
+ };
+ 
+ #if (!I2C2_I3C_SEL)
+@@ -597,25 +543,6 @@ &i2c6 {
+ 
+ 	status = "okay";
+ 
+-	ov5645_csi22: ov5645_csi22@3c {
+-		compatible = "ovti,ov5645";
+-		reg = <0x3c>;
+-		clocks = <&ov5645_fixed_clk>;
+-		clock-frequency = <24000000>;
+-		vdddo-supply = <&ov5645_vdddo_1v8>;
+-		vdda-supply = <&ov5645_vdda_2v8>;
+-		vddd-supply = <&ov5645_vddd_1v5>;
+-		enable-gpios = <&pinctrl RZV2H_GPIO(6, 1) GPIO_ACTIVE_HIGH>;
+-		reset-gpios = <&pinctrl RZV2H_GPIO(9, 2) GPIO_ACTIVE_LOW>;
+-
+-		port {
+-			ov5645_to_csi22: endpoint {
+-				clock-lanes = <0>;
+-				data-lanes = <1 2>;
+-				remote-endpoint = <&csi22_in>;
+-			};
+-		};
+-	};
+ };
+ 
+ #if (!I2C7_POEG_SEL)
+@@ -626,25 +553,6 @@ &i2c7 {
+ 
+ 	status = "okay";
+ 
+-	ov5645_csi23: ov5645_csi23@3c {
+-		compatible = "ovti,ov5645";
+-		reg = <0x3c>;
+-		clocks = <&ov5645_fixed_clk>;
+-		clock-frequency = <24000000>;
+-		vdddo-supply = <&ov5645_vdddo_1v8>;
+-		vdda-supply = <&ov5645_vdda_2v8>;
+-		vddd-supply = <&ov5645_vddd_1v5>;
+-		enable-gpios = <&pinctrl RZV2H_GPIO(6, 0) GPIO_ACTIVE_HIGH>;
+-		reset-gpios = <&pinctrl RZV2H_GPIO(9, 3) GPIO_ACTIVE_LOW>;
+-
+-		port {
+-			ov5645_to_csi23: endpoint {
+-				clock-lanes = <0>;
+-				data-lanes = <1 2>;
+-				remote-endpoint = <&csi23_in>;
+-			};
+-		};
+-	};
+ };
+ #endif
+ 
+@@ -655,15 +563,6 @@ &cru2 {
+ &csi22 {
+ 	status = "okay";
+ 
+-	ports {
+-		port {
+-			csi22_in: endpoint {
+-				clock-lanes = <0>;
+-				data-lanes = <1 2>;
+-				remote-endpoint = <&ov5645_to_csi22>;
+-			};
+-		};
+-	};
+ };
+ 
+ #if (!I2C7_POEG_SEL)
+@@ -674,15 +573,6 @@ &cru3 {
+ &csi23 {
+ 	status = "okay";
+ 
+-	ports {
+-		port {
+-			csi23_in: endpoint {
+-				clock-lanes = <0>;
+-				data-lanes = <1 2>;
+-				remote-endpoint = <&ov5645_to_csi23>;
+-			};
+-		};
+-	};
+ };
+ #endif
+ 
+-- 
+2.25.1
+
