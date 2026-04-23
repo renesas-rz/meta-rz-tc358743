@@ -3,8 +3,8 @@ HDMI to MIPI-CSI Capture Device using the Geekworm C790 ( TC358743 Chip )
 ![](images/C790_HDMI2CSI.jpg)
 
 ### Supported Devices
-- RZ/V2N EVK ( minimium AISDK 6.1 )
-- RZ/V2H EVK ( minimium AISDK 7.0 )
+- RZ/V2N EVK ( minimium AISDK 7.0 VLP 6.3 ) 
+- RZ/V2H EVK ( minimium AISDK 7.0 VLP 6.0 )
 
 ### Requirments
 - [ Renesas AI SDK ](https://renesas-rz.github.io/rzv_ai_sdk/latest)
