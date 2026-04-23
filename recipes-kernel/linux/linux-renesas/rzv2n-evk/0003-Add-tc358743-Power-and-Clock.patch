@@ -1,0 +1,55 @@
+From f0449e16dae5374d541f1b2a671b64ad0cc2d930 Mon Sep 17 00:00:00 2001
+From: zkmike <zkmike@gmail.com>
+Date: Thu, 23 Apr 2026 08:44:23 -0700
+Subject: [PATCH 3/5] Add tc358743 Power and Clock
+
+---
+ .../dts/renesas/r9a09g056n48-rzv2n-evk.dts    | 32 +++++++++++++++++++
+ 1 file changed, 32 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/renesas/r9a09g056n48-rzv2n-evk.dts b/arch/arm64/boot/dts/renesas/r9a09g056n48-rzv2n-evk.dts
+index a5aee5e7f..de4f74899 100644
+--- a/arch/arm64/boot/dts/renesas/r9a09g056n48-rzv2n-evk.dts
++++ b/arch/arm64/boot/dts/renesas/r9a09g056n48-rzv2n-evk.dts
+@@ -300,6 +300,38 @@ vqmmc_sdhi1: regulator-vqmmc-sdhi1 {
+ 		states = <3300000 0>, <1800000 1>;
+ 	};
+ 
++	/* Add 27MHz clock */
++	tc358743_clk: tc358743-clock {
++	    compatible = "fixed-clock";
++	    #clock-cells = <0>;
++	    clock-frequency = <27000000>;
++ 	};
++	
++	tc358743_dovdd_1v8: regulator-1v8 {
++	    compatible = "regulator-fixed";
++	    regulator-name = "tc358743_dovdd";
++	    regulator-min-microvolt = <1800000>;
++	    regulator-max-microvolt = <1800000>;
++	    regulator-always-on;
++ 	};
++
++	/* Add 3.3V regulator for analog (if not already available) */
++	tc358743_avdd_3v3: regulator-3v3 {
++	    compatible = "regulator-fixed";
++	    regulator-name = "tc358743_avdd";
++	    regulator-min-microvolt = <3300000>;
++	    regulator-max-microvolt = <3300000>;
++	    regulator-always-on;
++	};
++
++	/* Add a 1.2V regulator for TC358743 digital core */
++	tc358743_dvdd_1v2: regulator-1v2 {
++	    compatible = "regulator-fixed";
++	    regulator-name = "tc358743_dvdd";
++	    regulator-min-microvolt = <1200000>;
++	    regulator-max-microvolt = <1200000>;
++	    regulator-always-on;
++ 	};
+ 
+ 	gpio_dummy: gpio-dummy {
+ 		compatible = "gpio-dummy";
+-- 
+2.25.1
+

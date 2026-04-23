@@ -1,20 +1,21 @@
-From c5d1f427491ab0a8c22f729125ff9c28e5f2c120 Mon Sep 17 00:00:00 2001
+From 4d0e590a4f7efe273fbd94eb08f1be9b7db3c8ba Mon Sep 17 00:00:00 2001
 From: zkmike <zkmike@gmail.com>
-Date: Tue, 16 Dec 2025 17:17:39 -0800
-Subject: [PATCH 4/4] add tc358743 camera CAM1 CN8
+Date: Thu, 23 Apr 2026 08:49:48 -0700
+Subject: [PATCH 5/5] Add tc358743 camera CAM1 CN8
 
 ---
- .../boot/dts/renesas/r9a09g056n44-evk.dts     | 41 ++++++++++++++++++-
- 1 file changed, 40 insertions(+), 1 deletion(-)
+ .../dts/renesas/r9a09g056n48-rzv2n-evk.dts    | 42 +++++++++++++++++++
+ 1 file changed, 42 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/renesas/r9a09g056n44-evk.dts b/arch/arm64/boot/dts/renesas/r9a09g056n44-evk.dts
-index 02e9bf9c240b..ac276691fca9 100644
---- a/arch/arm64/boot/dts/renesas/r9a09g056n44-evk.dts
-+++ b/arch/arm64/boot/dts/renesas/r9a09g056n44-evk.dts
-@@ -885,6 +885,37 @@ &i2c1 {
- 
+diff --git a/arch/arm64/boot/dts/renesas/r9a09g056n48-rzv2n-evk.dts b/arch/arm64/boot/dts/renesas/r9a09g056n48-rzv2n-evk.dts
+index 99d84dd39..73ea0e1ec 100644
+--- a/arch/arm64/boot/dts/renesas/r9a09g056n48-rzv2n-evk.dts
++++ b/arch/arm64/boot/dts/renesas/r9a09g056n48-rzv2n-evk.dts
+@@ -518,6 +518,38 @@ &i2c1 {
+ 	pinctrl-names = "default";
+ 	clock-frequency = <400000>;
  	status = "okay";
- 
++
 +	tc358743_csi21: tc358743_csi21@f {
 +
 +	    /* TC358743 SPECIFIC - must match driver exactly */
@@ -45,15 +46,15 @@ index 02e9bf9c240b..ac276691fca9 100644
 +	            link-frequencies = /bits/ 64 <297000000>;
 +	        };
 +	    };
-+	};
++	};	
  };
  
- &cru1 {
-@@ -894,7 +925,15 @@ &cru1 {
+ #if (I2C2_I3C_POEG_SEL == I2C2_SEL || I2C2_I3C_POEG_SEL == I3C_SEL)
+@@ -1277,6 +1309,16 @@ &cru1 {
+ 
  &csi21 {
  	status = "okay";
- 
--
++
 +	ports {
 +		port {
 +			csi21_in: endpoint {
@@ -64,8 +65,8 @@ index 02e9bf9c240b..ac276691fca9 100644
 +		};
 +	};
  };
- #else
- &spi2 {
+ 
+ &cmtw0 {
 -- 
 2.25.1
 
